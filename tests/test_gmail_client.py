@@ -14,7 +14,7 @@ def mock_credentials():
 def mock_service(mock_credentials):
     mock_service = mock.Mock()
     mock_service.users.return_value.messages.return_value.list.return_value.execute.return_value = {'messages': [{"id": "val"}]}
-    mock_service.users.return_value.messages.return_value.get.return_value.execute.return_value = {}
+    mock_service.users.return_value.messages.return_value.get.return_value.execute.return_value = "abc@gmail.com"
     mock_service.users.return_value.messages.return_value.return_value = mock_service.users.return_value.messages.return_value
     mock_service.users.return_value.return_value = mock_service.users.return_value
     mock_service.return_value = mock_service
@@ -44,4 +44,4 @@ def test_get_email(gmail_client, mock_service):
     message_id = '123456789'
     email = gmail_client.get_email(mock_service, message_id)
     mock_service.users.return_value.messages.return_value.get.assert_called_once_with(userId='me', id=message_id)
-    assert email == {}
+    assert email == "abc@gmail.com"
