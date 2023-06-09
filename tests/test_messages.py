@@ -3,7 +3,7 @@ from unittest import mock
 
 import pytest
 
-from mail.populate import parse_date, parse_from, process_email, process_messages
+from mail.messages import parse_date, parse_from, process_email, process_messages
 
 
 @pytest.fixture
