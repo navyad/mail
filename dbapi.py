@@ -1,7 +1,6 @@
 import os
 
 import sqlite3
-from sqlite3 import Error
 
 
 def get_connection():
@@ -20,9 +19,11 @@ def create_table():
     print("Email table created successfully.")
 
 
-def populate_email(records):
+def insert_emails(records):
+    create_table()
     with get_connection() as conn:
         cursor = conn.cursor()
+        print("inserting records...")
         cursor.executemany("INSERT INTO Email VALUES(:sender, :subject, :received_date)", records)
         conn.commit()
         print("Bulk inserts completed successfully.")
