@@ -10,7 +10,8 @@ class GmailClient:
     CREDENTIALS_FILE = os.environ.get('GMAIL_API_CREDS_FILE')
 
     def authenticate(self):
-        flow = InstalledAppFlow.from_client_secrets_file(self.CREDENTIALS_FILE, self.SCOPES)
+        flow = InstalledAppFlow.from_client_secrets_file(
+            self.CREDENTIALS_FILE, self.SCOPES)
         return flow.run_local_server(port=0)
 
     def build_service(self):
@@ -23,5 +24,6 @@ class GmailClient:
         return results.get('messages', [])
 
     def get_email(self, service, message_id):
-        email = service.users().messages().get(userId='me', id=message_id).execute()
+        email = service.users().messages().get(
+            userId='me', id=message_id).execute()
         return email
