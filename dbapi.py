@@ -2,7 +2,7 @@ import sqlite3
 
 from datetime import datetime, timedelta
 
-from constants import PREDICATE_MAP
+from .constants import PREDICATE_MAP
 
 
 def get_connection():
@@ -76,5 +76,4 @@ class RuleQuery:
         with get_connection() as conn:
             cursor = conn.cursor()
             print("running query...")
-            res = cursor.execute(query)
-            return res.fetchall()
+            return cursor.execute(query).fetchall()
