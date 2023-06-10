@@ -1,0 +1,38 @@
+[{
+    "description": "Rule_1",
+    "conditions": [
+        {
+            "field": "From",
+            "predicate": "contains",
+            "value": "neupass.com"
+        },
+        {
+            "field": "Subject",
+            "predicate": "contains",
+            "value": "better"
+        }
+    ],
+    "predicate": "All",
+    "actions": [
+        "Mark as unread"
+    ]
+},
+{
+    "description": "Rule_2",
+    "conditions": [
+        {
+            "field": "From",
+            "predicate": "contains",
+            "value": "hdfcbank.com"
+        },
+        {
+            "field": "Subject",
+            "predicate": "contains",
+            "value": "better"
+        }
+    ],
+    "predicate": "All",
+    "actions": [
+        "Mark as unread"
+    ]
+}]
