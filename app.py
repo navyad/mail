@@ -3,7 +3,7 @@ import argparse
 from gmail_client import GmailClient
 
 from messages import fetch_messages, process_messages
-from dbapi import insert_emails, get_query
+from dbapi import insert_emails, RuleQuery, create_table
 from rules import find_rule_by_description
 
 
@@ -18,28 +18,34 @@ def fetch_populate_emails():
     insert_emails(records)
 
 
-def apply_rule(rule):
+def apply_rule(rule_description):
     """
     apply rule on stored emails
     """
-    rule = find_rule_by_description(rule_description)
-    query = get_query(rule)
+    rule = find_rule_by_description(description=rule_description)
+    instance = RuleQuery(rule=rule)
+    query = instance.build_query()
     print(query)
+    rows = instance.run_query(query=query)
+    print(rows)
 
 
 if __name__ == '__main__':
+    choices = ['Rule_1', 'Rule_2']
     parser = argparse.ArgumentParser(description="Apple mail app")
     required_group = parser.add_argument_group("Required arguments")
+    required_group.add_argument("--create-table", action="store_true", help="Create Table")
     required_group.add_argument("--populate-db", action="store_true", help="Populate the database")
-    required_group.add_argument("--rule-description", metavar='', choices=['Rule_1'], help="Description of the rule")
+    required_group.add_argument("--rule-description", metavar='', choices=choices, help="Description of the rule")
 
     args = parser.parse_args()
 
-    if not (args.populate_db or args.rule_description):
-        parser.error("At least one argument  is required.")
-
     rule_description = args.rule_description
-    if args.populate_db:
+    if args.create_table:
+        create_table()
+    elif args.populate_db:
         fetch_populate_emails()
     elif rule_description:
         apply_rule(rule_description)
+    else:
+        parser.error("At least one argument  is required.")

@@ -1,5 +1,7 @@
 import sqlite3
 
+from datetime import datetime, timedelta
+
 from constants import PREDICATE_MAP
 
 
@@ -11,7 +13,7 @@ def create_table():
     with get_connection() as conn:
         cursor = conn.cursor()
         cursor.execute('''
-            CREATE TABLE IF NOT EXISTS Email (
+            CREATE TABLE IF NOT EXISTS email (
                 sender VARCHAR(255),
                 subject VARCHAR(255),
                 received_date DATE
@@ -21,11 +23,10 @@ def create_table():
 
 
 def insert_emails(records):
-    create_table()
     with get_connection() as conn:
         cursor = conn.cursor()
         print("inserting records...")
-        cursor.executemany("INSERT INTO Email VALUES(:sender, :subject, :received_date)", records)
+        cursor.executemany("INSERT INTO email VALUES(:sender, :subject, :received_date)", records)
         conn.commit()
         print("Bulk inserts completed successfully.")
 
@@ -35,6 +36,16 @@ class RuleQuery:
     def __init__(self, rule):
         self.rule = rule
 
+    def __handle_all_any(self, all_any):
+        if all_any == "All":
+            return " AND "
+        elif all_any == "Any":
+            return " OR "
+
+    def __handle_n_days_old(self, value):
+        n_days_ago = datetime.now() - timedelta(days=int(value))
+        return n_days_ago.strftime('%Y-%m-%d')
+
     def get_query_for_condition(self, query, condition):
         field = condition["field"]
         predicate = condition["predicate"]
@@ -42,25 +53,28 @@ class RuleQuery:
 
         if predicate == "contains":
             query += f"{field} {PREDICATE_MAP[predicate]} '%{value}%'"
-        elif predicate in ("not equals", "less than"):
+        elif predicate == "not equals":
             query += f"{field} {PREDICATE_MAP[predicate]} '{value}'"
+        elif predicate == "less than":
+            n_days_ago_str = self.__handle_n_days_old(value=value)
+            query += f"{field} {PREDICATE_MAP[predicate]} '{n_days_ago_str}'"
 
-        if self.rule["predicate"] == "All":
-            query += " AND "
-        elif self.rule["predicate"] == "Any":
-            query += " OR "
+        query += self.__handle_all_any(all_any=self.rule["predicate"])
         return query
 
     def remove_trailing_predicate(self, query):
         return query[:-5] if self.rule["predicate"] == "All" else query[:-4]
 
     def build_query(self):
-        query = "SELECT * FROM your_table WHERE "
+        query = "SELECT * FROM email WHERE "
         for condition in self.rule["conditions"]:
             query = self.get_query_for_condition(query=query, condition=condition)
         query = self.remove_trailing_predicate(query=query)
         return query
 
-
-def get_query(rule):
-    return RuleQuery(rule=rule).build_query()
+    def run_query(self, query):
+        with get_connection() as conn:
+            cursor = conn.cursor()
+            print("running query...")
+            res = cursor.execute(query)
+            return res.fetchall()
