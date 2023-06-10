@@ -2,12 +2,12 @@
     "description": "Rule_1",
     "conditions": [
         {
-            "field": "From",
+            "field": "sender",
             "predicate": "contains",
             "value": "neupass.com"
         },
         {
-            "field": "Subject",
+            "field": "subject",
             "predicate": "contains",
             "value": "better"
         }
@@ -21,18 +21,13 @@
     "description": "Rule_2",
     "conditions": [
         {
-            "field": "From",
-            "predicate": "contains",
-            "value": "hdfcbank.com"
-        },
-        {
-            "field": "Subject",
-            "predicate": "contains",
-            "value": "better"
+            "field": "received_date",
+            "predicate": "less than",
+            "value": "2"
         }
     ],
     "predicate": "All",
     "actions": [
-        "Mark as unread"
+        "Move Message:trash"
     ]
 }]
