@@ -26,7 +26,7 @@ def parse_from(from_string):
 
 
 def process_email(email):
-    item = {}
+    item = {"message_id": email['id']}
     for header in email['payload']['headers']:
         if header['name'] in ['From', 'Subject', 'Date']:
             field = header['name'].lower()

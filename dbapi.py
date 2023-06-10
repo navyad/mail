@@ -2,7 +2,7 @@ import sqlite3
 
 from datetime import datetime, timedelta
 
-from .constants import PREDICATE_MAP
+from constants import PREDICATE_MAP
 
 
 def get_connection():
@@ -14,6 +14,7 @@ def create_table():
         cursor = conn.cursor()
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS email (
+                message_id VARCHAR(50),
                 sender VARCHAR(255),
                 subject VARCHAR(255),
                 received_date DATE
@@ -26,7 +27,7 @@ def insert_emails(records):
     with get_connection() as conn:
         cursor = conn.cursor()
         print("inserting records...")
-        cursor.executemany("INSERT INTO email VALUES(:sender, :subject, :received_date)", records)
+        cursor.executemany("INSERT INTO email VALUES(:message_id, :sender, :subject, :received_date)", records)
         conn.commit()
         print("Bulk inserts completed successfully.")
 
