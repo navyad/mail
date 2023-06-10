@@ -1,12 +1,20 @@
 import os
 
+import requests
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 
 
+class APIException(Exception):
+
+    def __init__(self, error_message):
+        self.error_message = error_message
+
+
 class GmailClient:
 
-    SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
+    SCOPES = ['https://www.googleapis.com/auth/gmail.readonly',
+              'https://www.googleapis.com/auth/gmail.modify']
     CREDENTIALS_FILE = os.environ.get('GMAIL_API_CREDS_FILE')
 
     def authenticate(self):
@@ -27,3 +35,21 @@ class GmailClient:
         email = service.users().messages().get(
             userId='me', id=message_id).execute()
         return email
+
+    def make_modify_request(self, access_token, message_id, payload):
+        url = f'https://www.googleapis.com/gmail/v1/users/me/messages/{message_id}/modify'
+        headers = {'Authorization': f'Bearer {access_token}'}
+        print(f"modify request: {url}: {payload}")
+        response = requests.post(url=url, json=payload, headers=headers)
+        if response.status_code == 200:
+            print("modify request successful")
+            return
+        error_message = response.json()['error']['message']
+        raise APIException(error_message=error_message)
+
+    def get_payload(self, action):
+        payload = {"Mark as unread": {'removeLabelIds': ['UNREAD']},
+                   "Mark as read": {'addLabelIds': ['UNREAD']},
+                   "Move Message Trash": {'addLabelIds': ['TRASH']},
+                   "Move Message INBOX": {'addLabelIds': ['INBOX']}}
+        return payload[action]

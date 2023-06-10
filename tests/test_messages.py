@@ -15,7 +15,9 @@ def email():
                 {'name': 'Subject', 'value': 'Pride Unprejudiced'},
                 {'name': 'Date', 'value': 'Fri, 09 Jun 2023 11:30:16 +0000'}
             ]
-        }
+        },
+        'id': "dummy-email-id",
+        'labelIds': ['INBOX']
     }
 
 
@@ -48,7 +50,10 @@ def test_parse_from():
 
 
 def test_process_email(email):
-    expected_result = {'sender': 'hello@releases.mubi.com', 'subject': 'Pride Unprejudiced', 'received_date': parser.parse('Fri, 09 Jun 2023 11:30:16 +0000').date()}
+    expected_result = {'sender': 'hello@releases.mubi.com',
+                       'subject': 'Pride Unprejudiced',
+                       'received_date': parser.parse('Fri, 09 Jun 2023 11:30:16 +0000').date(),
+                       'message_id': 'dummy-email-id'}
     result = process_email(email)
     assert result == expected_result
 
@@ -56,7 +61,11 @@ def test_process_email(email):
 def test_process_messages(client, service, email):
     messages = [{'id': '123456789'}]
     client.get_email.return_value = email
-    expected_records = [{'sender': 'hello@releases.mubi.com', 'subject': 'Pride Unprejudiced', 'received_date': parser.parse('Fri, 09 Jun 2023 11:30:16 +0000').date()}]
+    expected_records = [
+        {'sender': 'hello@releases.mubi.com',
+         'subject': 'Pride Unprejudiced',
+         'received_date': parser.parse('Fri, 09 Jun 2023 11:30:16 +0000').date(),
+         'message_id': 'dummy-email-id'}]
     records = process_messages(client, service, messages)
     assert records == expected_records
     client.get_email.assert_called_once_with(service=service, message_id='123456789')

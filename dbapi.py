@@ -2,8 +2,6 @@ import sqlite3
 
 from datetime import datetime, timedelta
 
-from constants import PREDICATE_MAP
-
 
 def get_connection():
     return sqlite3.connect('database.db')
@@ -37,6 +35,9 @@ class RuleQuery:
     def __init__(self, rule):
         self.rule = rule
         self.all_any_map = {"All": " AND ", "Any": " OR "}
+        self.PREDICATE_MAP = {"contains": "LIKE",
+                              "not equals": "<>",
+                              "less than": "<"}
 
     def __handle_n_days_old(self, value):
         n_days_ago = datetime.now() - timedelta(days=int(value))
@@ -48,12 +49,12 @@ class RuleQuery:
         value = condition["value"]
 
         if predicate == "contains":
-            query += f"{field} {PREDICATE_MAP[predicate]} '%{value}%'"
+            query += f"{field} {self.PREDICATE_MAP[predicate]} '%{value}%'"
         elif predicate == "not equals":
-            query += f"{field} {PREDICATE_MAP[predicate]} '{value}'"
+            query += f"{field} {self.PREDICATE_MAP[predicate]} '{value}'"
         elif predicate == "less than":
             n_days_ago_str = self.__handle_n_days_old(value=value)
-            query += f"{field} {PREDICATE_MAP[predicate]} '{n_days_ago_str}'"
+            query += f"{field} {self.PREDICATE_MAP[predicate]} '{n_days_ago_str}'"
 
         query += self.all_any_map[self.rule["predicate"]]
         return query
@@ -62,14 +63,24 @@ class RuleQuery:
         return query[:-5] if self.rule["predicate"] == "All" else query[:-4]
 
     def build_query(self):
-        query = "SELECT * FROM email WHERE "
+        """
+        combine the conditions of a rule and returns query
+        """
+        query = "SELECT message_id, subject FROM email WHERE "
         for condition in self.rule["conditions"]:
             query = self.get_query_for_condition(query=query, condition=condition)
         query = self.remove_trailing_predicate(query=query)
         return query
 
     def run_query(self, query):
+        """
+        run query in db to fetch realted emails
+        """
         with get_connection() as conn:
             cursor = conn.cursor()
             print("running query...")
             return cursor.execute(query).fetchall()
+
+    def get_actions(self):
+        for action in self.rule['actions']:
+            yield action

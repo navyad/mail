@@ -13,9 +13,7 @@
         }
     ],
     "predicate": "All",
-    "actions": [
-        "Mark as unread"
-    ]
+    "actions": ["Mark as unread"]
 },
 {
     "description": "Rule_2",
@@ -27,7 +25,23 @@
         }
     ],
     "predicate": "All",
-    "actions": [
-        "Move Message:trash"
-    ]
+    "actions": ["Move Message Trash"]
+},
+{
+    "description": "Rule_3",
+    "conditions": [
+        {
+            "field": "sender",
+            "predicate": "contains",
+            "value": "zomato"
+        },
+        {
+            "field": "subject",
+            "predicate": "contains",
+            "value": "kill"
+        }
+
+    ],
+    "predicate": "Any",
+    "actions": ["Move Message Trash"]
 }]

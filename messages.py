@@ -36,6 +36,7 @@ def process_email(email):
             if field == 'from':
                 field, value = parse_from(from_string=value)
             item.update({field: value})
+            print(f"{item}: label_ids: {email['labelIds']}")
     return item
 
 

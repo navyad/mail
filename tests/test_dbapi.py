@@ -60,9 +60,9 @@ def test_get_query_for_condition_less_than(rule_query):
         "predicate": "less than",
         "value": "2"
     }
-    n_days_ago = datetime.now() - timedelta(days=2)
+    n_days_ago = datetime.now().date() - timedelta(days=2)
     n_days_ago_str = n_days_ago.strftime('%Y-%m-%d')
-    expected_query = "SELECT * FROM email WHERE date < '2023-06-08' AND "
+    expected_query = f"SELECT * FROM email WHERE date < '{n_days_ago_str}' AND "
     assert rule_query.get_query_for_condition(query, condition) == expected_query
 
 
@@ -73,5 +73,7 @@ def test_remove_trailing_predicate_and(rule_query):
 
 
 def test_build_query(rule_query):
-    expected_query = "SELECT * FROM email WHERE sender LIKE '%neupass.com%' AND subject <> 'better' AND date < '2023-06-08'"
+    n_days_ago = datetime.now().date() - timedelta(days=2)
+    n_days_ago_str = n_days_ago.strftime('%Y-%m-%d')
+    expected_query = f"SELECT message_id, subject FROM email WHERE sender LIKE '%neupass.com%' AND subject <> 'better' AND date < '{n_days_ago_str}'"
     assert rule_query.build_query() == expected_query
