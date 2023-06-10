@@ -36,12 +36,7 @@ class RuleQuery:
 
     def __init__(self, rule):
         self.rule = rule
-
-    def __handle_all_any(self, all_any):
-        if all_any == "All":
-            return " AND "
-        elif all_any == "Any":
-            return " OR "
+        self.all_any_map = {"All": " AND ", "Any": " OR "}
 
     def __handle_n_days_old(self, value):
         n_days_ago = datetime.now() - timedelta(days=int(value))
@@ -60,7 +55,7 @@ class RuleQuery:
             n_days_ago_str = self.__handle_n_days_old(value=value)
             query += f"{field} {PREDICATE_MAP[predicate]} '{n_days_ago_str}'"
 
-        query += self.__handle_all_any(all_any=self.rule["predicate"])
+        query += self.all_any_map[self.rule["predicate"]]
         return query
 
     def remove_trailing_predicate(self, query):
