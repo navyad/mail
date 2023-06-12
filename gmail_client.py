@@ -22,8 +22,7 @@ class GmailClient:
             self.CREDENTIALS_FILE, self.SCOPES)
         return flow.run_local_server(port=0)
 
-    def build_service(self):
-        credentials = self.authenticate()
+    def build_service(self, credentials):
         return build('gmail', 'v1', credentials=credentials)
 
     def get_messages(self, service):

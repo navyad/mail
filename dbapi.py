@@ -7,7 +7,7 @@ def get_connection():
     return sqlite3.connect('database.db')
 
 
-def create_table():
+def create_email_table():
     with get_connection() as conn:
         cursor = conn.cursor()
         cursor.execute('''
@@ -18,7 +18,20 @@ def create_table():
                 received_date DATE
             )
         ''')
-    print("Email table created successfully.")
+    print("email table created successfully.")
+
+
+def create_token_table():
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS token (
+                token VARCHAR(250),
+                expire_on DATETIME,
+                created_on DATETIME
+            )
+        ''')
+    print("token table created successfully.")
 
 
 def insert_emails(records):
@@ -28,6 +41,22 @@ def insert_emails(records):
         cursor.executemany("INSERT INTO email VALUES(:message_id, :sender, :subject, :received_date)", records)
         conn.commit()
         print("Bulk inserts completed successfully.")
+
+
+def save_token(token, expire_on):
+    created_on = datetime.now()
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        print("saving token...")
+        cursor.execute("INSERT INTO token (token, expire_on, created_on) VALUES (?, ?, ?)", (token, expire_on, created_on))
+        print("token saved successfully.")
+
+
+def get_token():
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT token FROM token")
+        return cursor.fetchall()[0][0]
 
 
 class RuleQuery:
