@@ -95,8 +95,7 @@ class RuleQuery:
         query = "SELECT message_id, subject FROM email WHERE "
         for condition in self.rule["conditions"]:
             query = self.get_query_for_condition(query=query, condition=condition)
-        query = self.remove_trailing_predicate(query=query)
-        return query
+        return self.remove_trailing_predicate(query=query)
 
     def run_query(self, query):
         """

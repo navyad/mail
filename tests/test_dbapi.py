@@ -1,14 +1,12 @@
 import pytest
 
-from datetime import datetime, timedelta
-
 from mail.dbapi import RuleQuery
 
 
 @pytest.fixture
 def rule_query():
     rule = {
-        "description": "Rule_1",
+        "description": "test_rule",
         "conditions": [
             {
                 "field": "sender",
@@ -60,9 +58,7 @@ def test_get_query_for_condition_less_than(rule_query):
         "predicate": "less than",
         "value": "2"
     }
-    n_days_ago = datetime.now().date() - timedelta(days=2)
-    n_days_ago_str = n_days_ago.strftime('%Y-%m-%d')
-    expected_query = f"SELECT * FROM email WHERE date < '{n_days_ago_str}' AND "
+    expected_query = 'SELECT * FROM email WHERE date(received_date) >= date("now", "-2 days") AND '
     assert rule_query.get_query_for_condition(query, condition) == expected_query
 
 
@@ -73,7 +69,5 @@ def test_remove_trailing_predicate_and(rule_query):
 
 
 def test_build_query(rule_query):
-    n_days_ago = datetime.now().date() - timedelta(days=2)
-    n_days_ago_str = n_days_ago.strftime('%Y-%m-%d')
-    expected_query = f"SELECT message_id, subject FROM email WHERE sender LIKE '%neupass.com%' AND subject <> 'better' AND date < '{n_days_ago_str}'"
+    expected_query = 'SELECT message_id, subject FROM email WHERE sender LIKE \'%neupass.com%\' AND subject <> \'better\' AND date(received_date) >= date("now", "-2 days")'
     assert rule_query.build_query() == expected_query
