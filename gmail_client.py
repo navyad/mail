@@ -42,7 +42,7 @@ class GmailClient:
         response = requests.post(url=url, json=payload, headers=headers)
         if response.status_code == 200:
             print("modify request successful")
-            return
+            return response.json()
         error_message = response.json()['error']['message']
         raise APIException(error_message=error_message)
 

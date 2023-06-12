@@ -1,5 +1,7 @@
 import json
 
+CONTAINS = "contains"
+
 
 def load_rules():
     with open('rules.json', 'r') as file:
