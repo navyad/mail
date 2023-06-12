@@ -12,3 +12,7 @@ def find_rule_by_description(description):
         if rule['description'] == description:
             return rule
     raise Exception(f"Rule not found: {description}")
+
+
+def get_rules_description():
+    return [rule['description'] for rule in load_rules()]

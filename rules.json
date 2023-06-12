@@ -25,7 +25,7 @@
         }
     ],
     "predicate": "All",
-    "actions": ["Move Message Trash"]
+    "actions": ["Move to TRASH"]
 },
 {
     "description": "Rule_3",
@@ -43,5 +43,71 @@
 
     ],
     "predicate": "Any",
-    "actions": ["Move Message Trash"]
+    "actions": ["Move to TRASH"]
+},
+{
+    "description": "Rule_4",
+    "conditions": [
+        {
+            "field": "received_date",
+            "predicate": "less than",
+            "value": "2"
+        },
+        {
+            "field": "sender",
+            "predicate": "contains",
+            "value": "Bank"
+        }
+
+    ],
+    "predicate": "All",
+    "actions": ["Mark as unread"]
+},
+{
+    "description": "Rule_5",
+    "conditions": [
+        {
+            "field": "received_date",
+            "predicate": "less than",
+            "value": "2"
+        },
+        {
+            "field": "sender",
+            "predicate": "contains",
+            "value": "Bank"
+        }
+
+    ],
+    "predicate": "All",
+    "actions": ["Mark as read", "Move to TRASH"]
+},
+{
+    "description": "Rule_6",
+    "conditions": [
+        {
+            "field": "received_date",
+            "predicate": "less than",
+            "value": "2"
+        },
+        {
+            "field": "sender",
+            "predicate": "contains",
+            "value": "Bank"
+        }
+
+    ],
+    "predicate": "All",
+    "actions": ["Move to INBOX", "Mark as unread"]
+},
+{
+    "description": "Rule_7",
+    "conditions": [
+        {
+            "field": "sender",
+            "predicate": "contains",
+            "value": "noreply@idfcfirstbank.com"
+        }
+    ],
+    "predicate": "All",
+    "actions": ["Mark as unread"]
 }]
