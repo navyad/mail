@@ -6,7 +6,7 @@ from messages import fetch_messages, process_messages
 from dbapi import (
     insert_emails, RuleQuery, create_email_table,
     create_token_table, save_token, get_token)
-from rules import find_rule_by_description
+from rules import find_rule_by_description, get_rules_description
 
 
 def fetch_populate_emails():
@@ -48,12 +48,11 @@ def perform_operations(rule_query_instance, rows):
 
 
 if __name__ == '__main__':
-    choices = ['Rule_1', 'Rule_2', 'Rule_3']
     parser = argparse.ArgumentParser(description="Apple mail app")
     required_group = parser.add_argument_group("Required arguments")
     required_group.add_argument("--create-tables", action="store_true", help="Create table")
     required_group.add_argument("--populate-db", action="store_true", help="Populate the database")
-    required_group.add_argument("--apply-rule", metavar='', choices=choices, help="Apply rule")
+    required_group.add_argument("--apply-rule", metavar='', choices=get_rules_description(), help="Apply rule")
 
     args = parser.parse_args()
 

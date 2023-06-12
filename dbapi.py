@@ -1,6 +1,6 @@
 import sqlite3
 
-from datetime import datetime, timedelta
+from datetime import datetime
 
 
 def get_connection():
@@ -68,10 +68,6 @@ class RuleQuery:
                               "not equals": "<>",
                               "less than": "<"}
 
-    def __handle_n_days_old(self, value):
-        n_days_ago = datetime.now() - timedelta(days=int(value))
-        return n_days_ago.strftime('%Y-%m-%d')
-
     def get_query_for_condition(self, query, condition):
         field = condition["field"]
         predicate = condition["predicate"]
@@ -82,8 +78,9 @@ class RuleQuery:
         elif predicate == "not equals":
             query += f"{field} {self.PREDICATE_MAP[predicate]} '{value}'"
         elif predicate == "less than":
-            n_days_ago_str = self.__handle_n_days_old(value=value)
-            query += f"{field} {self.PREDICATE_MAP[predicate]} '{n_days_ago_str}'"
+            query += f'date(received_date) >= date("now", "-{value} days")'
+        else:
+            raise Exception(f"Invalid predicate: {predicate}")
 
         query += self.all_any_map[self.rule["predicate"]]
         return query

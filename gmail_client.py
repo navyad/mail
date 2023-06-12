@@ -47,8 +47,8 @@ class GmailClient:
         raise APIException(error_message=error_message)
 
     def get_payload(self, action):
-        payload = {"Mark as unread": {'removeLabelIds': ['UNREAD']},
-                   "Mark as read": {'addLabelIds': ['UNREAD']},
-                   "Move Message Trash": {'addLabelIds': ['TRASH']},
-                   "Move Message INBOX": {'addLabelIds': ['INBOX']}}
+        payload = {"Mark as unread": {'addLabelIds': ['UNREAD']},
+                   "Mark as read": {'removeLabelIds': ['UNREAD']},
+                   "Move to TRASH": {'addLabelIds': ['TRASH']},
+                   "Move to INBOX": {'addLabelIds': ['INBOX']}}
         return payload[action]
